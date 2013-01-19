@@ -32,6 +32,7 @@ use OpenGL::Shader;
 
 use Moo;
 use Time::HiRes 'time';
+use curry;
 
 use lib '../framework';
 
@@ -120,7 +121,7 @@ sub init {
     $self->vao( glGenVertexArrays_p( 1 ) );
     glBindVertexArray( $self->vao );
 
-    glutMotionFunc( sub { $self->process_active_mouse_motion( @_ ) } );
+    glutMotionFunc( $self->curry::process_active_mouse_motion );
 
     return;
 }
