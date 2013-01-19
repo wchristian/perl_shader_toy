@@ -68,29 +68,29 @@ float snoise(vec2 v)
   return 130.0 * dot(m, g);
 }
 
-float dist_to_metaball( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
+vec4 dist_to_metaball( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
 
    vec3 ball_pos1 = vec3( ball_x-1, ball_y, ball_z )+vec3(0.12)*vec3(sin(time*13),cos(time*13),0);
    vec3 ball_pos2 = vec3( ball_x, ball_y-1, ball_z )+vec3(0.11)*vec3(sin(time*12),0,cos(time*12));
    vec3 ball_pos3 = vec3( ball_x+.25, ball_y+.25, ball_z )+vec3(0.13)*vec3(0,sin(time*11),cos(time*11));
    float dist = 1/length ( pos_on_ray - ball_pos1 ) + 1/length ( pos_on_ray - ball_pos2 )+ 1/length ( pos_on_ray - ball_pos3 );
    dist = 1/dist+0.32;
-   return dist;
+   return vec4(dist, 1,0,0);
 }
 
-float dist_to_ball_at_single( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
+vec4 dist_to_ball_at_single( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
    vec3 ball_pos = vec3( ball_x, ball_y, ball_z );
    float dist = length ( pos_on_ray - ball_pos );
-   return dist;
+   return vec4(dist, 0,1,0);
 }
    
-float dist_to_ball_at( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
+vec4 dist_to_ball_at( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
    vec3 ball_pos = vec3( ball_x, ball_y, ball_z );
     vec3 c = vec3(5);
    ball_pos = mod(ball_pos,c );
    vec3 fake_pos = mod(pos_on_ray,c)-0.5*c;
    float dist = length ( fake_pos - ball_pos );
-   return dist;
+   return vec4(dist, 0,0,1);
 }
 
 vec3 rotate_vector( vec3 vector, vec3 around, float degr ) {
@@ -115,11 +115,18 @@ float sample_text_by_pos( vec3 p, float scale, float amplitude ) {
    return col_val;
 }
 
+vec4 min_dc ( vec4 dc1, vec4 dc2 ) {
+   if( dc1.x <= dc2.x ) {
+      return dc1;
+   }
+   return dc2;
+}
+
 float rand(vec2 coordinate) {
     return fract(sin(dot(coordinate.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float sdPlane( vec3 p, vec3 n, float origin_distance ) {
+vec4 sdPlane( vec3 p, vec3 n, float origin_distance ) {
    n = normalize(n);
    //origin_distance += sample_text_by_pos( p, 16, 8 );
    origin_distance += noise_for( p, 4, 1 );
@@ -128,23 +135,23 @@ float sdPlane( vec3 p, vec3 n, float origin_distance ) {
    //origin_distance += sample_text_by_pos( p, 4, 2 );
    //origin_distance += sample_text_by_pos( p, 0.125, 0.0625 );
    //origin_distance += rand( p.xy )/4000;
-   return dot(p,n) + origin_distance;
+   return vec4(dot(p,n) + origin_distance,1,1,0);
 }
 
-float scene( vec3 pos_on_ray, vec3 cam_pos ) {
-   float plane = sdPlane( pos_on_ray, vec3( 0,1,0 ), 1 );
+vec4 scene( vec3 pos_on_ray, vec3 cam_pos ) {
+   vec4 plane = sdPlane( pos_on_ray, vec3( 0,1,0 ), 1 );
 
-   float dist = 99999;
-      float imp_time = 5*time;
-      vec3 light_imp_pos = cam_pos+vec3(10*sin(imp_time),5*sin(imp_time*4),10*cos(imp_time));
-   dist = min( dist, dist_to_ball_at_single( pos_on_ray, light_imp_pos.x, light_imp_pos.y, light_imp_pos.z ));
-   dist -= 1; // blob size
-   dist = min( dist, dist_to_metaball( pos_on_ray, 5+time,  3.5, -3 ) );
-   dist = min( dist, dist_to_ball_at( pos_on_ray,  0,  0, 5 ) );
+   vec4 dist = vec4(99999,0.2,0,0.2);
+   float imp_time = 5*time;
+   vec3 light_imp_pos = cam_pos+vec3(10*sin(imp_time),5*sin(imp_time*4),10*cos(imp_time));
+   dist = min_dc( dist, dist_to_ball_at_single( pos_on_ray, light_imp_pos.x, light_imp_pos.y, light_imp_pos.z ));
+   dist.x -= 1; // blob size
+   dist = min_dc( dist, dist_to_metaball( pos_on_ray, 5+time,  3.5, -3 ) );
+   dist = min_dc( dist, dist_to_ball_at( pos_on_ray,  0,  0, 5 ) );
    //dist = min( dist, dist_to_ball_at_single( pos_on_ray,  3.0, -2.5, 5.0 ) );
    //dist = min( dist, dist_to_ball_at_single( pos_on_ray,  -4.0, 0.0, 6.0 ) );
-   dist -= 0.5; // blob size
-   dist = min(dist,plane);
+   dist.x -= 0.5; // blob size
+   dist = min_dc(dist,plane);
    
    return dist;
 }
@@ -154,9 +161,9 @@ vec3 gen_normals( vec3 pos_on_ray, vec3 cam_pos ) {
    vec2 weights = vec2( 0.001, 0.0 );
    vec3 normals = normalize(
       vec3(
-         scene( pos_on_ray + weights.xyy,cam_pos ) - scene( pos_on_ray - weights.xyy,cam_pos ),
-         scene( pos_on_ray + weights.yxy,cam_pos ) - scene( pos_on_ray - weights.yxy,cam_pos ),
-         scene( pos_on_ray + weights.yxx,cam_pos ) - scene( pos_on_ray - weights.yxx,cam_pos )
+         scene( pos_on_ray + weights.xyy,cam_pos ).x - scene( pos_on_ray - weights.xyy,cam_pos ).x,
+         scene( pos_on_ray + weights.yxy,cam_pos ).x - scene( pos_on_ray - weights.yxy,cam_pos ).x,
+         scene( pos_on_ray + weights.yxx,cam_pos ).x - scene( pos_on_ray - weights.yxx,cam_pos ).x
       )
    );
 
@@ -196,19 +203,22 @@ void main() {
    vec3 pos_on_ray = cam_pos;
    float view_range = 125;
    float allowed_error = 0.1;
+   vec3 point_color;
 
    while (
          iterations++ <= iteration_max
       && dist_to_closest > allowed_error
       //&& length(pos_on_ray) < view_range
    ) {
-      dist_to_closest = scene( pos_on_ray, cam_pos );
+      vec4 result = scene( pos_on_ray, cam_pos );
+      dist_to_closest = result.x;
+      point_color = result.yzw;
       pos_on_ray += dist_to_closest * ray;
    }
 
    if ( iterations < iteration_max && length(pos_on_ray) < view_range ) {
       vec3 normal = gen_normals( pos_on_ray, cam_pos );
-      vec4 colour = vec4(0.2,0,0.2,1);
+      vec4 colour = vec4(point_color,1);
    
       vec4 light_imp_colour = vec4( 1, 1, 1, 1.0 );
       float imp_time = 5*time;
