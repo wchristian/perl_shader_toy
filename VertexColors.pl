@@ -26,6 +26,7 @@ use OpenGL qw(
   glUniform1fARB
   glGetUniformLocationARB_p
   glutMotionFunc
+  glutLeaveMainLoop
 );
 use OpenGL::Shader;
 
@@ -162,7 +163,7 @@ sub reshape {
 }
 
 sub keyboard {
-    my ( $key, $x, $y ) = @_;
+    my ( $self, $key, $x, $y ) = @_;
 
     glutLeaveMainLoop() if $key == 27;
 
