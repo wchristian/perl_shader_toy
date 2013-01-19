@@ -45,24 +45,24 @@ has vertexData => (
     default => sub {
         return OpenGL::Array->new_list(
             GL_FLOAT,    #
-            -1,  1,    0.0, 1.0,
-            1,  -1, 0.0, 1.0,
-            -1, -1, 0.0, 1.0,
-            -1,  1,    0.0, 1.0,
-            1,  1, 0.0, 1.0,
-            1, -1, 0.0, 1.0,
-            1.0,  0.0,    0.0, 1.0,
-            0.0,  1.0,    0.0, 1.0,
-            0.0,  0.0,    1.0, 1.0,
-            1.0,  0.0,    0.0, 1.0,
-            0.0,  1.0,    0.0, 1.0,
-            0.0,  0.0,    1.0, 1.0,
+            -1,  1,   0.0, 1.0,
+            1,   -1,  0.0, 1.0,
+            -1,  -1,  0.0, 1.0,
+            -1,  1,   0.0, 1.0,
+            1,   1,   0.0, 1.0,
+            1,   -1,  0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
         );
     }
 );
 
 has $_ => ( is => 'rw' ) for qw( vertexBufferObject vao shader_view shader_time shader_mouse viewport );
-has mouse => ( is => 'rw', default => sub {[1150,500]} );
+has mouse => ( is => 'rw', default => sub { [ 1150, 500 ] } );
 use 5.010;
 __PACKAGE__->new->main;
 exit;
@@ -71,16 +71,16 @@ sub InitializeProgram {
     my ( $self ) = @_;
     my @shaderList;
 
-	my $t = time;
-    push @shaderList, $self->LoadShader( GL_VERTEX_SHADER,   "VertexColors.vert" );
-	say "load vert:      ", time - $t, " s";
-	$t = time;
+    my $t = time;
+    push @shaderList, $self->LoadShader( GL_VERTEX_SHADER, "VertexColors.vert" );
+    say "load vert:      ", time - $t, " s";
+    $t = time;
     push @shaderList, $self->LoadShader( GL_FRAGMENT_SHADER, "VertexColors.frag" );
-	say "load frag:      ", time - $t, " s";
+    say "load frag:      ", time - $t, " s";
 
-	$t = time;
+    $t = time;
     $self->theProgram( $self->CreateProgram( @shaderList ) );
-	say "compile both:   ", time - $t, " s";
+    say "compile both:   ", time - $t, " s";
 
     return;
 }
@@ -100,10 +100,11 @@ sub InitializeVertexBuffer {
 
     return;
 }
+
 sub process_active_mouse_motion {
     my ( $self, $x, $y ) = @_;
-	$self->mouse([$x+375,$y]);
-	return;
+    $self->mouse( [ $x + 375, $y ] );
+    return;
 }
 
 sub init {
@@ -111,14 +112,14 @@ sub init {
 
     $self->InitializeProgram;
     $self->InitializeVertexBuffer;
-	$self->shader_mouse( glGetUniformLocationARB_p( $self->theProgram, "mouse" ) );
-	$self->shader_view( glGetUniformLocationARB_p( $self->theProgram, "view" ) );
-	$self->shader_time( glGetUniformLocationARB_p( $self->theProgram, "time" ) );
+    $self->shader_mouse( glGetUniformLocationARB_p( $self->theProgram, "mouse" ) );
+    $self->shader_view( glGetUniformLocationARB_p( $self->theProgram, "view" ) );
+    $self->shader_time( glGetUniformLocationARB_p( $self->theProgram, "time" ) );
 
     $self->vao( glGenVertexArrays_p( 1 ) );
     glBindVertexArray( $self->vao );
-	
-	glutMotionFunc( sub { $self->process_active_mouse_motion( @_ ) } );
+
+    glutMotionFunc( sub { $self->process_active_mouse_motion( @_ ) } );
 
     return;
 }
@@ -137,9 +138,9 @@ sub display {
     glVertexAttribPointerARB_c( 0, 4, GL_FLOAT, GL_FALSE, 0, 0 );
     glVertexAttribPointerARB_c( 1, 4, GL_FLOAT, GL_FALSE, 0, 48 );
 
-	glUniform1fARB( $self->shader_time, time - $start );
-	glUniform2fARB( $self->shader_mouse, @{$self->mouse} );
-	glUniform2fARB( $self->shader_view, @{$self->viewport} );
+    glUniform1fARB( $self->shader_time, time - $start );
+    glUniform2fARB( $self->shader_mouse, @{ $self->mouse } );
+    glUniform2fARB( $self->shader_view,  @{ $self->viewport } );
 
     glDrawArrays( GL_TRIANGLES, 0, 6 );
 
@@ -148,14 +149,14 @@ sub display {
     glUseProgramObjectARB( 0 );
 
     glutSwapBuffers();
-	glutPostRedisplay();
+    glutPostRedisplay();
 
     return;
 }
 
 sub reshape {
     my ( $self, $w, $h ) = @_;
-	$self->viewport([$w,$h]);
+    $self->viewport( [ $w, $h ] );
     glViewport( 0, 0, $w, $h );
     return;
 }
@@ -170,7 +171,7 @@ sub keyboard {
 
 sub defaults {
     my ( $self, $displayMode, $width, $height ) = @_;
-	$$width = 1024;
-	$$height = 768;
+    $$width  = 1024;
+    $$height = 768;
     return $displayMode;
 }
