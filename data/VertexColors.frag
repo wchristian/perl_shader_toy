@@ -135,7 +135,7 @@ vec4 sdPlane( vec3 p, vec3 n, float origin_distance ) {
     //origin_distance += sample_text_by_pos( p, 4, 2 );
     //origin_distance += sample_text_by_pos( p, 0.125, 0.0625 );
     //origin_distance += rand( p.xy )/4000;
-    return vec4(dot(p,n) + origin_distance,2/3,2/3,0);
+    return vec4(dot(p,n) + origin_distance,0,0,0);
 }
 
 vec4 scene( vec3 pos_on_ray, vec3 cam_pos ) {
