@@ -201,7 +201,7 @@ void main() {
     vec3 cam_pos = vec3( 2+time,5,0 );
     vec3 pos_on_ray = cam_pos;
     float view_range = 125;
-    float allowed_error = 0.1;
+    float allowed_error = 0.01;
     vec3 point_color;
 
     while (
