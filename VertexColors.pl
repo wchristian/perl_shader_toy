@@ -31,6 +31,9 @@ use OpenGL qw(
   glutMouseFunc
   GLUT_DOWN
   GLUT_LEFT_BUTTON
+  glutSetCursor
+  GLUT_CURSOR_INHERIT
+  GLUT_CURSOR_NONE
 );
 use OpenGL::Shader;
 
@@ -112,7 +115,9 @@ sub InitializeVertexBuffer {
 sub process_mouse_click {
     my ( $self, $button, $state ) = @_;
     glutWarpPointer( @{ $self->viewport_center } );
-    $self->mouse_captured( $button == GLUT_LEFT_BUTTON and $state == GLUT_DOWN );
+    my $captured = ( $button == GLUT_LEFT_BUTTON and $state == GLUT_DOWN );
+    $self->mouse_captured( $captured );
+    glutSetCursor( $captured ? GLUT_CURSOR_NONE : GLUT_CURSOR_INHERIT );
     return;
 }
 
@@ -189,7 +194,7 @@ sub reshape {
 sub keyboard {
     my ( $self, $key, $x, $y ) = @_;
 
-    glutLeaveMainLoop() if $key == 27;
+    glutSetCursor( GLUT_CURSOR_INHERIT ), glutLeaveMainLoop() if $key == 27;
 
     return;
 }
