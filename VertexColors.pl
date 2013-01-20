@@ -73,7 +73,7 @@ has vertexData => (
 has $_ => ( is => 'rw' ) for qw(
   vertexBufferObject vao shader_view shader_time shader_view_pos viewport viewport_center mouse_captured mouse_pos
 );
-has view_pos => ( is => 'rw', default => sub { [ 1150, 500 ] } );
+has view_pos => ( is => 'rw', default => sub { [ 1090, 332 ] } );
 use 5.010;
 __PACKAGE__->new->main;
 exit;
@@ -202,6 +202,6 @@ sub keyboard {
 sub defaults {
     my ( $self, $displayMode, $width, $height ) = @_;
     $$width  = 1024;
-    $$height = 768;
+    $$height = 576;
     return $displayMode;
 }
