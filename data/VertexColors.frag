@@ -195,19 +195,19 @@ void main() {
     ray = rotate_vector( ray, vec3( -1, 0, 0 ), 180*mousy.y-90 );
     ray = rotate_vector( ray, vec3( 0, -1, 0 ), 180*mousy.x-90 );
 
-    int iteration_max = 45;
+    int iteration_max = 400; // fallback to ensure we don't render infinitely on complex geometry
     int iterations = 0;
     float dist_to_closest = 1000.0;
     vec3 cam_pos = vec3( 2+time,5,0 );
     vec3 pos_on_ray = cam_pos;
-    float view_range = 125;
-    float allowed_error = 0.01;
+    float view_range = 125; // stop rendering after we got this far from the camera
+    float allowed_error = 0.01; // how close to a solid is an acceptable hit
     vec3 point_color;
 
     while (
         iterations++ <= iteration_max
         && dist_to_closest > allowed_error
-        //&& length(pos_on_ray) < view_range
+        && length(pos_on_ray-cam_pos) < view_range
     ) {
         vec4 result = scene( pos_on_ray, cam_pos );
         dist_to_closest = result.x;
@@ -215,7 +215,7 @@ void main() {
         pos_on_ray += dist_to_closest * ray;
     }
 
-    if ( iterations < iteration_max && length(pos_on_ray) < view_range ) {
+    if ( length(pos_on_ray-cam_pos) < view_range ) {
         vec3 normal = gen_normals( pos_on_ray, cam_pos );
         vec4 colour = vec4(point_color,1);
 
