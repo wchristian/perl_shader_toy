@@ -76,13 +76,13 @@ vec4 dist_to_metaball( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z
     vec3 ball_pos3 = vec3( ball_x+.25, ball_y+.25, ball_z )+vec3(0.13)*vec3(0,sin(time*11),cos(time*11));
     float dist = 1/length ( pos_on_ray - ball_pos1 ) + 1/length ( pos_on_ray - ball_pos2 )+ 1/length ( pos_on_ray - ball_pos3 );
     dist = 1/dist+0.32;
-    return vec4(dist, 0.5,0,0);
+    return vec4(dist, 0.5,0,0)-0.59;
 }
 
 vec4 dist_to_ball_at_single( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
     vec3 ball_pos = vec3( ball_x, ball_y, ball_z );
     float dist = length ( pos_on_ray - ball_pos );
-    return vec4(dist, 0,0.5,0);
+    return vec4(dist, 0,0.5,0)-1;
 }
 
 vec4 dist_to_ball_at( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
@@ -91,7 +91,7 @@ vec4 dist_to_ball_at( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z 
     ball_pos = mod(ball_pos,c );
     vec3 fake_pos = mod(pos_on_ray,c)-0.5*c;
     float dist = length ( fake_pos - ball_pos );
-    return vec4(dist, 0,0,0.5);
+    return vec4(dist, 0,0,0.5)-0.5;
 }
 
 vec3 rotate_vector( vec3 vector, vec3 around, float degr ) {
@@ -145,12 +145,10 @@ vec4 scene( vec3 pos_on_ray, vec3 cam_pos ) {
     float imp_time = 5*time;
     vec3 light_imp_pos = cam_pos+vec3(10*sin(imp_time),5*sin(imp_time*4),10*cos(imp_time));
     dist = min_dc( dist, dist_to_ball_at_single( pos_on_ray, light_imp_pos.x, light_imp_pos.y, light_imp_pos.z ));
-    dist.x -= 1; // blob size
     dist = min_dc( dist, dist_to_metaball( pos_on_ray, 5+time,  3.5, -3 ) );
     dist = min_dc( dist, dist_to_ball_at( pos_on_ray,  0,  0, 5 ) );
     //dist = min( dist, dist_to_ball_at_single( pos_on_ray,  3.0, -2.5, 5.0 ) );
     //dist = min( dist, dist_to_ball_at_single( pos_on_ray,  -4.0, 0.0, 6.0 ) );
-    dist.x -= 0.5; // blob size
     dist = min_dc(dist,plane);
 
     return dist;
