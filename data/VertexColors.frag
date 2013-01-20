@@ -2,7 +2,7 @@
 
 uniform float time;
 uniform vec2 view;
-uniform vec2 mouse;
+uniform vec2 view_pos;
 vec2 pixel_pos;
 out vec4 gl_FragColor;
 uniform sampler2D distortion;
@@ -188,7 +188,7 @@ vec4 add_light( vec4 colour, vec4 light_colour, vec3 light_pos, float light_stre
 }
 
 void main() {
-	vec2 mousy = mouse / view;
+	vec2 mousy = view_pos / view;
    vec2 cam_center = gl_FragCoord.xy - view / 2;
    float zoom = 300;
    vec3 ray = normalize(vec3( cam_center, zoom ));
