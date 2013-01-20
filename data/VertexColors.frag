@@ -140,8 +140,47 @@ vec4 sdPlane( vec3 p, vec3 n, float origin_distance ) {
 
 vec4 dist_to_cuboid_at( vec3 pos_on_ray, float ball_x, float ball_y, float ball_z ) {
     vec3 ball_pos = vec3( ball_x, ball_y, ball_z );
-    vec3 K = abs(pos_on_ray - ball_pos) - 0.5 * vec3(1);
-    float dist = max (max (K.x, K.y), K.z);
+    float dist = length( pos_on_ray - ball_pos )-1;
+
+    //hor
+    vec3 K = abs(pos_on_ray - ball_pos + vec3( 0,.8,0 ) ) - 0.5 * vec3(3,.1,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0,0.3,0 ) ) - 0.5 * vec3(3,.1,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0,-0.3,0 ) ) - 0.5 * vec3(3,.1,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0,-0.8,0 ) ) - 0.5 * vec3(3,.1,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    //xvert
+    K = abs(pos_on_ray - ball_pos + vec3( .8,0,0 ) ) - 0.5 * vec3(.1,3,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0.3,0,0 ) ) - 0.5 * vec3(.1,3,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( -0.3,0,0 ) ) - 0.5 * vec3(.1,3,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( -0.8,0,0 ) ) - 0.5 * vec3(.1,3,3);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    //yvert
+    K = abs(pos_on_ray - ball_pos + vec3( 0,0,.8 ) ) - 0.5 * vec3(3,3,.1);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0,0,0.3 ) ) - 0.5 * vec3(3,3,.1);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0,0,-0.3 ) ) - 0.5 * vec3(3,3,.1);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
+    K = abs(pos_on_ray - ball_pos + vec3( 0,0,-0.8 ) ) - 0.5 * vec3(3,3,.1);
+    dist = max(dist, -max (max (K.x, K.y), K.z));
+
     return vec4(dist, 0,1.0/3,1.0/3);
 }
 
